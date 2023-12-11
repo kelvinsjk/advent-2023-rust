@@ -1,4 +1,4 @@
-use crate::code::day04b::solution;
+use crate::code::day05b::solution;
 pub mod code;
 
 fn main() {
