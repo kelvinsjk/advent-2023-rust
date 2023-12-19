@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 num = "0.4"
 pheap = "0.3"
+regex = "1.10"
