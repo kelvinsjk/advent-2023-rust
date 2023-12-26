@@ -38,3 +38,7 @@ pub mod day19a;
 pub mod day19b;
 pub mod day20a;
 pub mod day20b;
+pub mod day21a;
+pub mod day21b;
+pub mod day22a;
+pub mod day22b;

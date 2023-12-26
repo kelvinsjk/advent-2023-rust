@@ -3,27 +3,39 @@ use std::collections::HashMap;
 use std::fs;
 
 pub fn solution() {
-	let input = "...........
-.....###.#.
-.###.##..#.
-..#.#...#..
-....#.#....
-.##..S####.
-.##..#...#.
-.......##..
-.##.#.####.
-.##..##.##.
-...........";
+	// 	let input = "...........
+	// .....###.#.
+	// .###.##..#.
+	// ..#.#...#..
+	// ....#.#....
+	// .##..S####.
+	// .##..#...#.
+	// .......##..
+	// .##.#.####.
+	// .##..##.##.
+	// ...........";
 	let input: String = fs::read_to_string("src/inputs/day21.txt").expect("Error reading input");
 	let (map, (x, y), _) = parse_input(&input);
 	let mut coords: Vec<(usize, usize, isize, isize)> = vec![(x, y, 0, 0)];
 	let mut odds: Vec<(usize, usize, isize, isize)> = Vec::new();
 	let mut evens: Vec<(usize, usize, isize, isize)> = Vec::new();
-	let mut prev: Vec<(usize, usize, isize, isize)> = Vec::new();
 	println!("Starting at {:?}, {}, {}", x, y, map.len());
-	for i in 0..(65 + 0 * 131) {
+	let mut u0: usize = 0;
+	let mut u1: usize = 0;
+	let mut a: usize = 0;
+	for i in 0..(65 + 2 * 131) {
+		if i == 65 {
+			u0 = evens.len();
+			println!("Iteration {}, u0={}", i, u0);
+		} else if i == 65 + 131 {
+			u1 = odds.len();
+			a = u1 - u0;
+			println!("Iteration {}, a={}", i, a);
+		}
+		if i > 65 + 131 {
+			println!("Iteration {}", i);
+		}
 		let mut new_coords: Vec<(usize, usize, isize, isize)> = Vec::new();
-		println!("Coords: {:?} at step {i}", coords.len());
 		while coords.len() > 0 {
 			let (x, y, zx, zy) = coords.pop().unwrap();
 			for dir in [
@@ -35,36 +47,32 @@ pub fn solution() {
 			.into_iter()
 			{
 				if let Some((new_x, new_y, c, z_x, z_y)) = safe_retrieval((x, y), (zx, zy), dir, &map) {
-					// if c == '.' || c == 'S' {
-					// 	if i % 2 == 0 {
-					// 		if !evens.contains(&(new_x, new_y, z_x, z_y)) {
-					// 			evens.push((new_x, new_y, z_x, z_y));
-					// 			new_coords.push((new_x, new_y, z_x, z_y));
-					// 		}
-					// 	} else {
-					// 		if !odds.contains(&(new_x, new_y, z_x, z_y)) {
-					// 			odds.push((new_x, new_y, z_x, z_y));
-					// 			new_coords.push((new_x, new_y, z_x, z_y));
-					// 		}
-					// 	}
-					// }
-					if c == '.' || c == 'S' {
-						if !prev.contains(&(new_x, new_y, z_x, z_y)) {
-							prev.push((new_x, new_y, z_x, z_y));
-							new_coords.push((new_x, new_y, z_x, z_y));
+					if c != '#' {
+						if i % 2 == 0 {
+							if !evens.contains(&(new_x, new_y, z_x, z_y)) {
+								evens.push((new_x, new_y, z_x, z_y));
+								new_coords.push((new_x, new_y, z_x, z_y));
+							}
+						} else {
+							if !odds.contains(&(new_x, new_y, z_x, z_y)) {
+								odds.push((new_x, new_y, z_x, z_y));
+								new_coords.push((new_x, new_y, z_x, z_y));
+							}
 						}
 					}
 				}
 			}
 		}
-		coords = new_coords.clone();
+		coords = new_coords;
 	}
+	let ap2 = evens.len() - u1;
+	let d = ap2 - a;
+	println!("d={}", d);
+	let n = (26501365 - 65) / 131;
+	let sn = n * (2 * a + (n - 1) * d) / 2;
+	let ans = sn + u0;
 	//println!("{:?}", coords);
-	println!(
-		"{},{}",
-		coords.len() + odds.len(),
-		coords.len() + evens.len()
-	);
+	println!("{},", ans);
 }
 
 fn parse_input(
